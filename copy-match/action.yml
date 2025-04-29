@@ -1,5 +1,5 @@
 name: "Copy Matching Files"
-description: "Copy files from a source directory to a destination if they match given prefixes"
+description: "Copy files from a source directory to a destination if they match given filenames"
 author: a3.services
 inputs:
   source:
@@ -9,7 +9,7 @@ inputs:
     description: "Destination directory to copy matching files into"
     required: true
   match:
-    description: "Array of filename prefixes to match"
+    description: "Array of filenames to match exactly"
     required: true
     type: array
 runs:
@@ -23,7 +23,7 @@ runs:
           fname=$(basename "$file")
 
           for pat in "${{ inputs.match[@] }}"; do
-            if [[ "$fname" == "$pat"* ]]; then
+            if [[ "$fname" == "$pat" ]]; then
               cp "$file" "${{ inputs.dest }}/"
               echo "Copied: $fname → ${{ inputs.dest }}"
               break
