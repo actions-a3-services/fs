@@ -21,6 +21,8 @@ runs:
 
         for file in "${{ inputs.source }}"/*; do
           fname=$(basename "$file")
+          echo "....."
+          echo fname
 
           for pat in "${{ inputs.match }}"; do
             if [[ "$fname" == $pat ]]; then
