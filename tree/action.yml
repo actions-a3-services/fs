@@ -1,0 +1,23 @@
+name: "Tree Directory Summary"
+description: "Display tree structure of a directory in \$GITHUB_STEP_SUMMARY"
+author: a3.services
+branding:
+  icon: file-tree
+  color: purple
+inputs:
+  dir:
+    description: "Directory to show tree for"
+    required: true
+    default: "."
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        DIR="${{ inputs.dir }}"
+
+        echo "### 🌳 Tree of \`$DIR\`" >> "$GITHUB_STEP_SUMMARY"
+        echo "" >> "$GITHUB_STEP_SUMMARY"
+        echo '```' >> "$GITHUB_STEP_SUMMARY"
+        tree "$DIR" >> "$GITHUB_STEP_SUMMARY"
+        echo '```' >> "$GITHUB_STEP_SUMMARY"
