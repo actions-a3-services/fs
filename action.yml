@@ -1,0 +1,15 @@
+name: AMS Actions
+description: A collection of AMS actions
+author: a3.services
+branding:
+  icon: settings
+  color: purple
+inputs: {}
+outputs: {}
+runs:
+  using: "composite"
+  steps:
+    - name: ls to table
+      uses: ./ls
+    - name: tree
+      uses: ./tree
