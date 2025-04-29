@@ -19,17 +19,18 @@ runs:
       run: |
         mkdir -p "${{ inputs.dest }}"
 
-        for file in "${{ inputs.source }}"/*; do
-          fname=$(basename "$file")
+        readarray -t MATCHES <<< "${{ inputs.match }}"
+
+        for FILE in "${{ inputs.source }}"/*; do
+          FILE_NAME=$(basename "$file")
           echo "....."
-          echo $fname
+          echo ${FILE_NAME}
           echo 
 
-          for pat in "${{ inputs.match }}"; do
-            echo ">>>>>> $pat"
-            if [[ "$fname" == $pat ]]; then
-              cp "$file" "${{ inputs.dest }}/"
-              echo "Copied: $fname → ${{ inputs.dest }}"
+          for MATCH in "${MATCHES[@]}"; do
+            if [[ "${FILE_NAME}" == ${MATCH} ]]; then
+              cp "${FILE}" "${{ inputs.dest }}/"
+              echo "Copied: ${FILE_NAME} → ${{ inputs.dest }}"
               break
             fi
           done
