@@ -1,0 +1,25 @@
+name: "List Directory Summary"
+description: "List files in a directory and append them as a Markdown table to \$GITHUB_STEP_SUMMARY"
+author: a3.services
+branding:
+  icon: settings
+  color: purple
+inputs:
+  dir:
+    description: "Directory to list"
+    required: true
+    default: "."
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        DIR="${{ inputs.dir }}"
+
+        {
+          echo "### 📂 Contents of \`$DIR\`"
+          echo ""
+          echo "| Permissions | Links | Owner | Group | Size | Date | Name |"
+          echo "|-------------|-------|-------|-------|------|------|------|"
+          ls -la "$DIR" | tail -n +2 | awk '{printf "| %s | %s | %s | %s | %s | %s %s %s | %s |\n", $1, $2, $3, $4, $5, $6, $7, $8, $9}'
+        } >> "$GITHUB_STEP_SUMMARY"
