@@ -22,7 +22,7 @@ runs:
         readarray -t MATCHES <<< "${{ inputs.match }}"
 
         for FILE in "${{ inputs.source }}"/*; do
-          FILE_NAME=$(basename "$file")
+          FILE_NAME=$(basename "${FILE}")
           echo "....."
           echo ${FILE_NAME}
           echo 
