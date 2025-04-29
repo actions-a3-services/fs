@@ -14,15 +14,18 @@
 |--------|------------------------------------------------------------------|----------|---------|
 | source | Source directory containing files                                | ✅ Yes   | N/A     |
 | dest   | Destination directory to copy matching files into                | ✅ Yes   | N/A     |
-| match  | Comma-separated list of filename prefixes to match               | ✅ Yes   | N/A     |
+| match  | List of filename prefixes to match                               | ✅ Yes   | N/A     |
 
 ## 🚀 Example Usage
 
 ```yaml
-- name: Copy matching files
-  uses: actions-a3-services/fs/copy-match@main
+- name: Copy Matching Files
+  uses: actions-a3-services/copy-matching-files@main
   with:
-    source: ./build
-    dest: ./dist
-    match: "file1,prefix_,output"
+    source: './source_directory'
+    dest: './destination_directory'
+    match: 
+      - 'file1.txt'
+      - 'file2.txt'
+      - 'file3.txt'
 ```
