@@ -1,0 +1,33 @@
+name: "Copy Matching Files"
+description: "Copy files from a source directory to a destination if they match given prefixes"
+author: a3.services
+inputs:
+  source:
+    description: "Source directory containing files"
+    required: true
+  dest:
+    description: "Destination directory to copy matching files into"
+    required: true
+  match:
+    description: "Comma-separated list of filename prefixes to match"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        mkdir -p "${{ inputs.dest }}"
+
+        IFS=',' read -ra PATTERNS <<< "${{ inputs.match }}"
+
+        for file in "${{ inputs.source }}"/*; do
+          fname=$(basename "$file")
+
+          for pat in "${PATTERNS[@]}"; do
+            if [[ "$fname" == "$pat"* ]]; then
+              cp "$file" "${{ inputs.dest }}/"
+              echo "Copied: $fname → ${{ inputs.dest }}"
+              break
+            fi
+          done
+        done
