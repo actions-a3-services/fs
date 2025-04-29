@@ -12,7 +12,7 @@
 
 | Name | Description            | Required | Default |
 |------|------------------------|----------|---------|
-| dir  | Directory to list      | ✅ Yes   | `.`     |
+| dir  | Directory to list      | ❓ No    | `.`     |
 
 ## 🚀 Example Usage
 
