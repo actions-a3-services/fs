@@ -12,7 +12,7 @@
 
 | Name | Description                | Required | Default |
 |------|----------------------------|----------|---------|
-| dir  | Directory to show tree for | ✅ Yes   | `.`     |
+| dir  | Directory to show tree for | ❓ No    | `.`     |
 
 ## 🚀 Example Usage
 
