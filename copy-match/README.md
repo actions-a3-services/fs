@@ -24,8 +24,8 @@
   with:
     source: './source_directory'
     dest: './destination_directory'
-    match: 
-      - 'file1.txt'
-      - 'file2.txt'
-      - 'file3.txt'
+    match: |
+      file1.txt
+      file2.txt
+      file3.txt
 ```
