@@ -1,5 +1,5 @@
 name: "Tree Directory Summary"
-description: "Display tree structure of a directory in \$GITHUB_STEP_SUMMARY"
+description: "Display tree structure of a directory in GITHUB_STEP_SUMMARY"
 author: a3.services
 branding:
   icon: file-tree
