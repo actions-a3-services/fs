@@ -22,7 +22,7 @@ runs:
         for file in "${{ inputs.source }}"/*; do
           fname=$(basename "$file")
 
-          for pat in "${{ inputs.match[@] }}"; do
+          for pat in "${{ inputs.match }}"; do
             if [[ "$fname" == $pat ]]; then
               cp "$file" "${{ inputs.dest }}/"
               echo "Copied: $fname → ${{ inputs.dest }}"
