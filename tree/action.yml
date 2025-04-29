@@ -19,5 +19,5 @@ runs:
         echo "### 🌳 Tree of \`$DIR\`" >> "$GITHUB_STEP_SUMMARY"
         echo "" >> "$GITHUB_STEP_SUMMARY"
         echo '```' >> "$GITHUB_STEP_SUMMARY"
-        tree "$DIR" >> "$GITHUB_STEP_SUMMARY"
+        tree -ah "$DIR" >> "$GITHUB_STEP_SUMMARY"
         echo '```' >> "$GITHUB_STEP_SUMMARY"
