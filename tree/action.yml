@@ -7,7 +7,7 @@ branding:
 inputs:
   dir:
     description: "Directory to show tree for"
-    required: true
+    required: false
     default: "."
 runs:
   using: "composite"
