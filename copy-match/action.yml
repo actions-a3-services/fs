@@ -1,6 +1,7 @@
 name: "Copy Matching Files"
 description: "Copy files from a source directory to a destination if they match given filenames"
 author: a3.services
+
 inputs:
   source:
     description: "Source directory containing files"
@@ -12,37 +13,28 @@ inputs:
     description: "Array of filenames to match exactly"
     required: true
     type: array
+
 runs:
   using: "composite"
   steps:
     - shell: bash
       run: |
-        set -euo pipefail
-    
         mkdir -p "${{ inputs.dest }}"
-    
-        echo "INPUT MATCH RAW:"
-        echo "${{ inputs.match }}"
-    
-        # bezpečné parsovanie (newline separated)
-        IFS=$'\n' read -d '' -r -a MATCHES <<< "${{ inputs.match }}" || true
-    
-        echo "PARSED MATCHES:"
-        printf '%s\n' "${MATCHES[@]}"
-    
-        while IFS= read -r FILE; do
-          FILE_NAME=$(basename "$FILE")
-    
+
+        readarray -t MATCHES <<< "${{ inputs.match }}"
+
+        for FILE in "${{ inputs.source }}"/*; do
+          FILE_NAME=$(basename "${FILE}")
+
+          echo "....."
+          echo "${FILE_NAME}"
+          echo
+
           for MATCH in "${MATCHES[@]}"; do
-            if [[ "$FILE_NAME" == "$MATCH" ]]; then
-              REL_PATH="${FILE#${{ inputs.source }}/}"
-              DEST_PATH="${{ inputs.dest }}/$(dirname "$REL_PATH")"
-    
-              mkdir -p "$DEST_PATH"
-              cp "$FILE" "$DEST_PATH/"
-    
-              echo "Copied: $REL_PATH"
+            if [[ "${FILE_NAME}" == "${MATCH}" ]]; then
+              cp "${FILE}" "${{ inputs.dest }}/"
+              echo "Copied: ${FILE_NAME} → ${{ inputs.dest }}"
               break
             fi
           done
-        done < <(find "${{ inputs.source }}" -type f)
+        done
