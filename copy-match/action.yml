@@ -17,23 +17,32 @@ runs:
   steps:
     - shell: bash
       run: |
+        set -euo pipefail
+    
         mkdir -p "${{ inputs.dest }}"
     
-        readarray -t MATCHES <<< "${{ inputs.match }}"
+        echo "INPUT MATCH RAW:"
+        echo "${{ inputs.match }}"
     
-        find "${{ inputs.source }}" -type f | while read -r FILE; do
-          FILE_NAME=$(basename "${FILE}")
+        # bezpečné parsovanie (newline separated)
+        IFS=$'\n' read -d '' -r -a MATCHES <<< "${{ inputs.match }}" || true
+    
+        echo "PARSED MATCHES:"
+        printf '%s\n' "${MATCHES[@]}"
+    
+        while IFS= read -r FILE; do
+          FILE_NAME=$(basename "$FILE")
     
           for MATCH in "${MATCHES[@]}"; do
-            if [[ "${FILE_NAME}" == "${MATCH}" ]]; then
+            if [[ "$FILE_NAME" == "$MATCH" ]]; then
               REL_PATH="${FILE#${{ inputs.source }}/}"
               DEST_PATH="${{ inputs.dest }}/$(dirname "$REL_PATH")"
     
               mkdir -p "$DEST_PATH"
               cp "$FILE" "$DEST_PATH/"
     
-              echo "Copied: ${REL_PATH}"
+              echo "Copied: $REL_PATH"
               break
             fi
           done
-        done
+        done < <(find "${{ inputs.source }}" -type f)
