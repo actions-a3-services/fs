@@ -1,40 +1,74 @@
 name: "Copy Matching Files"
-description: "Copy files from a source directory to a destination if they match given filenames"
+description: "Copy files from a source directory to a destination if they match given filenames or patterns"
 author: a3.services
 
 inputs:
   source:
     description: "Source directory containing files"
     required: true
+
   dest:
     description: "Destination directory to copy matching files into"
     required: true
+
   match:
-    description: "Array of filenames to match exactly"
+    description: "List of filename patterns (newline-separated)"
     required: true
-    type: array
+
+  subdir:
+    description: "If true, include subdirectories"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
   steps:
     - shell: bash
       run: |
+        set -euo pipefail
+
         mkdir -p "${{ inputs.dest }}"
 
-        readarray -t MATCHES <<< "${{ inputs.match }}"
+        # parse match patterns (newline-separated)
+        IFS=$'\n' read -d '' -r -a MATCHES <<< "${{ inputs.match }}" || true
 
-        for FILE in "${{ inputs.source }}"/*; do
-          FILE_NAME=$(basename "${FILE}")
+        echo "Subdir mode: ${{ inputs.subdir }}"
+        echo "Patterns:"
+        printf ' - %s\n' "${MATCHES[@]}"
 
-          echo "....."
-          echo "${FILE_NAME}"
-          echo
+        copy_file() {
+          local FILE="$1"
+          local FILE_NAME
+          FILE_NAME=$(basename "$FILE")
 
           for MATCH in "${MATCHES[@]}"; do
-            if [[ "${FILE_NAME}" == "${MATCH}" ]]; then
-              cp "${FILE}" "${{ inputs.dest }}/"
-              echo "Copied: ${FILE_NAME} → ${{ inputs.dest }}"
-              break
+            # glob match (NECITOVAŤ $MATCH)
+            if [[ "$FILE_NAME" == $MATCH ]]; then
+              if [[ "${{ inputs.subdir }}" == "true" ]]; then
+                REL_PATH="${FILE#${{ inputs.source }}/}"
+                DEST_PATH="${{ inputs.dest }}/$(dirname "$REL_PATH")"
+
+                mkdir -p "$DEST_PATH"
+                cp "$FILE" "$DEST_PATH/"
+                echo "Copied (subdir): $REL_PATH"
+              else
+                cp "$FILE" "${{ inputs.dest }}/"
+                echo "Copied: $FILE_NAME"
+              fi
+              return 0
             fi
           done
-        done
+        }
+
+        if [[ "${{ inputs.subdir }}" == "true" ]]; then
+          # rekurzívne
+          while IFS= read -r FILE; do
+            copy_file "$FILE"
+          done < <(find "${{ inputs.source }}" -type f)
+        else
+          # len top-level
+          for FILE in "${{ inputs.source }}"/*; do
+            [[ -f "$FILE" ]] || continue
+            copy_file "$FILE"
+          done
+        fi
