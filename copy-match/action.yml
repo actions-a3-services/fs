@@ -26,10 +26,10 @@ runs:
     - shell: bash
       run: |
         set -euo pipefail
+        shopt -s dotglob
 
         mkdir -p "${{ inputs.dest }}"
 
-        # parse match patterns (newline-separated)
         IFS=$'\n' read -d '' -r -a MATCHES <<< "${{ inputs.match }}" || true
 
         echo "Subdir mode: ${{ inputs.subdir }}"
@@ -42,7 +42,6 @@ runs:
           FILE_NAME=$(basename "$FILE")
 
           for MATCH in "${MATCHES[@]}"; do
-            # glob match (NECITOVAŤ $MATCH)
             if [[ "$FILE_NAME" == $MATCH ]]; then
               if [[ "${{ inputs.subdir }}" == "true" ]]; then
                 REL_PATH="${FILE#${{ inputs.source }}/}"
@@ -61,12 +60,11 @@ runs:
         }
 
         if [[ "${{ inputs.subdir }}" == "true" ]]; then
-          # rekurzívne
+          # find teraz nájde úplne všetko vrátane .dotfiles
           while IFS= read -r FILE; do
             copy_file "$FILE"
           done < <(find "${{ inputs.source }}" -type f)
         else
-          # len top-level
           for FILE in "${{ inputs.source }}"/*; do
             [[ -f "$FILE" ]] || continue
             copy_file "$FILE"
